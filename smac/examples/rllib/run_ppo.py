@@ -13,6 +13,7 @@ Increase the level of parallelism by changing --num-workers.
 import argparse
 
 import ray
+from ray import tune
 from ray.tune import run_experiments, register_env
 from ray.rllib.models import ModelCatalog
 
@@ -23,14 +24,13 @@ from smac.examples.rllib.model import MaskedActionsModel
 def on_episode_end(info):
     episode = info["episode"]
     info = episode.last_info_for(0)
-    import ipdb; ipdb.set_trace()
     episode.custom_metrics["win"] = int(info["battle_won"])
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--num-iters", type=int, default=100)
-    parser.add_argument("--num-workers", type=int, default=1)
+    parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--map-name", type=str, default="8m")
     args = parser.parse_args()
 
