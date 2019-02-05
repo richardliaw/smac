@@ -20,10 +20,17 @@ from smac.examples.rllib.env import RLlibStarCraft2Env
 from smac.examples.rllib.model import MaskedActionsModel
 
 
+def on_episode_end(info):
+    episode = info["episode"]
+    info = episode.last_info_for(0)
+    import ipdb; ipdb.set_trace()
+    episode.custom_metrics["win"] = int(info["battle_won"])
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--num-iters", type=int, default=100)
-    parser.add_argument("--num-workers", type=int, default=2)
+    parser.add_argument("--num-workers", type=int, default=1)
     parser.add_argument("--map-name", type=str, default="8m")
     args = parser.parse_args()
 
@@ -49,6 +56,9 @@ if __name__ == "__main__":
                 "model": {
                     "custom_model": "mask_model",
                 },
+                "callbacks": {
+                    "on_episode_end": tune.function(on_episode_end),
+                }
             },
         },
      })
